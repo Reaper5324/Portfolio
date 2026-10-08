@@ -92,3 +92,15 @@ a:focus-visible{outline:2px solid var(--acid);outline-offset:4px}
 @keyframes orb-float{to{translate:-12vw 16vh;scale:1.2}}
 @media(max-width:640px){.ambient-grid{background-size:48px 48px;opacity:.08}.orb-one{width:90vw;height:90vw;left:calc(var(--pointer-x) - 45vw);top:calc(var(--pointer-y) - 45vw)}.hero-visual{isolation:isolate}.image-frame{inset:0 21px 25px 18px}.orbit-large{width:calc(100% + 14px);left:-5px}.orbit-small{width:calc(100% + 34px);left:-15px}.project{transform:none!important}.project.reveal{transform:translateY(14px)!important}.project.reveal.is-visible{transform:translateY(0)!important}.project:after{display:none}.manifesto:after{font-size:140px;bottom:-52px}.package:hover{transform:none}.reveal{transform:translateY(14px)}}
 @media(prefers-reduced-motion:reduce){.ambient-orb,.ambient-grid,.orbit,.visual-stamp,.ticker-track{animation:none!important}.orb-one{transition:none}.reveal{opacity:1;transform:none;transition:none}.project,.package,.about-image img,.round-link:before{transition:none}}
+/* Keep the atmospheric look while limiting work during scroll. */
+:root{--orb-x:0px;--orb-y:0px}
+.ambient-grid{animation:none}
+.ambient-orb{filter:blur(58px);will-change:transform;contain:paint}
+.orb-one{left:60%;top:25%;transition:transform .45s ease-out;transform:translate3d(calc(var(--orb-x) - 50%),calc(var(--orb-y) - 50%),0)}
+.orb-two{animation:none;transform:translate3d(0,0,0)}
+.grain{opacity:.045;background-size:180px 180px}
+.project{will-change:transform}
+.live-preview{contain:strict;content-visibility:auto}
+@media(max-width:640px){.orb-one{left:60%;top:25%;transform:translate3d(calc(var(--orb-x) - 50%),calc(var(--orb-y) - 50%),0);transition:none}}
+@media(hover:none),(pointer:coarse){.ambient-orb{filter:blur(42px)}.project{will-change:auto}.project:hover .live-preview{opacity:.82}}
+@media(prefers-reduced-motion:reduce){.ambient-orb{will-change:auto;transform:none!important}.project{will-change:auto}}

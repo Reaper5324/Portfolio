@@ -17,6 +17,25 @@ window.addEventListener('scroll', () => {
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const previews = document.querySelectorAll('.live-preview');
+const activatePreview = (preview) => {
+  const frame = preview.querySelector('iframe[data-src]');
+  if (!frame) return;
+  frame.src = frame.dataset.src;
+  frame.removeAttribute('data-src');
+};
+if ('IntersectionObserver' in window) {
+  const previewLoader = new IntersectionObserver((entries, currentObserver) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        activatePreview(entry.target);
+        currentObserver.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '300px 0px' });
+  previews.forEach((preview) => previewLoader.observe(preview));
+} else {
+  previews.forEach(activatePreview);
+}
 const scalePreview = (preview) => {
   const frame = preview.querySelector('iframe');
   if (!frame) return;
@@ -50,20 +69,40 @@ if ('IntersectionObserver' in window && !reducedMotion) {
 
 const finePointer = window.matchMedia('(pointer: fine)').matches;
 if (finePointer && !reducedMotion) {
+  let pointerFrame = 0;
+  let pointerX = 0;
+  let pointerY = 0;
   window.addEventListener('pointermove', (event) => {
-    document.documentElement.style.setProperty('--pointer-x', `${event.clientX}px`);
-    document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`);
+    pointerX = event.clientX - window.innerWidth * 0.6;
+    pointerY = event.clientY - window.innerHeight * 0.25;
+    if (!pointerFrame) pointerFrame = window.requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('--orb-x', `${pointerX}px`);
+      document.documentElement.style.setProperty('--orb-y', `${pointerY}px`);
+      pointerFrame = 0;
+    });
   }, { passive: true });
 
   document.querySelectorAll('.project').forEach((card) => {
+    let cardFrame = 0;
+    let tiltX = 0;
+    let tiltY = 0;
+    let spotX = 50;
+    let spotY = 50;
     card.addEventListener('pointermove', (event) => {
       const rect = card.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width;
       const y = (event.clientY - rect.top) / rect.height;
-      card.style.setProperty('--tilt-x', `${(0.5 - y) * 2.2}deg`);
-      card.style.setProperty('--tilt-y', `${(x - 0.5) * 2.2}deg`);
-      card.style.setProperty('--spot-x', `${x * 100}%`);
-      card.style.setProperty('--spot-y', `${y * 100}%`);
+      tiltX = (0.5 - y) * 2.2;
+      tiltY = (x - 0.5) * 2.2;
+      spotX = x * 100;
+      spotY = y * 100;
+      if (!cardFrame) cardFrame = window.requestAnimationFrame(() => {
+        card.style.setProperty('--tilt-x', `${tiltX}deg`);
+        card.style.setProperty('--tilt-y', `${tiltY}deg`);
+        card.style.setProperty('--spot-x', `${spotX}%`);
+        card.style.setProperty('--spot-y', `${spotY}%`);
+        cardFrame = 0;
+      });
     });
     card.addEventListener('pointerleave', () => {
       card.style.setProperty('--tilt-x', '0deg');
