@@ -104,3 +104,20 @@ a:focus-visible{outline:2px solid var(--acid);outline-offset:4px}
 @media(max-width:640px){.orb-one{left:60%;top:25%;transform:translate3d(calc(var(--orb-x) - 50%),calc(var(--orb-y) - 50%),0);transition:none}}
 @media(hover:none),(pointer:coarse){.ambient-orb{filter:blur(42px)}.project{will-change:auto}.project:hover .live-preview{opacity:.82}}
 @media(prefers-reduced-motion:reduce){.ambient-orb{will-change:auto;transform:none!important}.project{will-change:auto}}
+/* Embedded pages repaint inconsistently inside transformed cards while scrolling. */
+.project:has(.live-preview iframe){transform:none!important;perspective:none;transform-style:flat;will-change:auto}
+.live-preview{content-visibility:visible;opacity:1;transform:none;transition:box-shadow .25s ease}
+.project:hover .live-preview,.project:focus-visible .live-preview{opacity:1;transform:none}
+.live-preview iframe{backface-visibility:hidden;transform:translateZ(0) scale(var(--preview-scale,.3));}
+.preview-skeleton{position:absolute;z-index:3;inset:0;display:flex;flex-direction:column;gap:8px;padding:14px;background:#e8ebea;overflow:hidden;transition:opacity .35s ease,visibility .35s ease}
+.preview-skeleton:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(105deg,transparent 28%,#fff9 45%,transparent 62%);transform:translateX(-100%);animation:skeleton-shimmer 1.7s ease-in-out infinite}
+.preview-skeleton span{display:block;position:relative;background:#cfd5d3;border-radius:2px}
+.preview-skeleton .skeleton-top{height:11px;width:100%;margin-bottom:8px;background:#d9dddc}
+.preview-skeleton .skeleton-title{height:13px;width:62%;background:#bfc7c5}
+.preview-skeleton .skeleton-line{height:6px;width:83%}
+.preview-skeleton .skeleton-line.short{width:57%}
+.preview-skeleton .skeleton-block{height:74px;width:100%;margin-top:6px;background:#d5dbd9}
+.live-preview.is-loaded .preview-skeleton{opacity:0;visibility:hidden}
+.live-preview.is-loaded .preview-skeleton:before{animation:none}
+@keyframes skeleton-shimmer{to{transform:translateX(100%)}}
+@media(prefers-reduced-motion:reduce){.preview-skeleton:before{animation:none;opacity:.35}}

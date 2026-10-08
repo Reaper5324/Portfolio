@@ -17,9 +17,17 @@ window.addEventListener('scroll', () => {
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const previews = document.querySelectorAll('.live-preview');
+previews.forEach((preview) => {
+  const skeleton = document.createElement('div');
+  skeleton.className = 'preview-skeleton';
+  skeleton.setAttribute('aria-hidden', 'true');
+  skeleton.innerHTML = '<span class="skeleton-top"></span><span class="skeleton-title"></span><span class="skeleton-line"></span><span class="skeleton-line short"></span><span class="skeleton-block"></span>';
+  preview.append(skeleton);
+});
 const activatePreview = (preview) => {
   const frame = preview.querySelector('iframe[data-src]');
   if (!frame) return;
+  frame.addEventListener('load', () => preview.classList.add('is-loaded'), { once: true });
   frame.src = frame.dataset.src;
   frame.removeAttribute('data-src');
 };
